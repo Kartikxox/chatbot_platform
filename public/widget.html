@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  #chat-bubble {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #222;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    z-index: 9999;
+  }
+  #chat-window {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 9999;
+    font-family: sans-serif;
+  }
+  #chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+  }
+  .bot-message {
+    background: #f0f0f0;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    max-width: 80%;
+  }
+  .option-btn {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 6px;
+    background: #222;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+  }
+</style>
+</head>
+<body>
+
+<div id="chat-bubble">💬</div>
+<div id="chat-window">
+  <div id="chat-messages"></div>
+</div>
+
+<script>
+  const BRAND_ID = 1; // hardcoded for now, we'll make this dynamic later
+  const API_URL = "http://localhost:3000/api/chat";
+
+  const bubble = document.getElementById('chat-bubble');
+  const chatWindow = document.getElementById('chat-window');
+  const messagesDiv = document.getElementById('chat-messages');
+
+  let currentNode = null;
+  let hasStarted = false;
+
+  bubble.addEventListener('click', () => {
+    const isOpen = chatWindow.style.display === 'flex';
+    chatWindow.style.display = isOpen ? 'none' : 'flex';
+    if (!isOpen && !hasStarted) {
+      hasStarted = true;
+      sendMessage(null);
+    }
+  });
+
+  async function sendMessage(selectedOption) {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        brand_id: BRAND_ID,
+        current_node: currentNode,
+        selected_option: selectedOption
+      })
+    });
+    const data = await response.json();
+    currentNode = data.node_key;
+    renderNode(data.message, data.options);
+  }
+
+  function renderNode(message, options) {
+    const msgEl = document.createElement('div');
+    msgEl.className = 'bot-message';
+    msgEl.textContent = message;
+    messagesDiv.appendChild(msgEl);
+
+    options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = option;
+      btn.onclick = () => sendMessage(option);
+      messagesDiv.appendChild(btn);
+    });
+
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+</script>
+
+</body>
+</html>
