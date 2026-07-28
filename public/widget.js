@@ -2,7 +2,7 @@
   // Get the brand_id from the script tag that loaded this file
   const scriptTag = document.currentScript;
   const BRAND_ID = scriptTag.getAttribute('data-brand-id');
-  const API_URL = "http://localhost:3000/api/chat";
+  const API_URL = "https://chatbotplatform-production.up.railway.app/api/chat";
 
   // Inject CSS
   const style = document.createElement('style');
