@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chatbot Admin</title>
+<style>
+  body {
+    font-family: sans-serif;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  h1 { font-size: 20px; }
+  label { display: block; margin-top: 15px; font-weight: bold; }
+  input, textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    font-family: monospace;
+    font-size: 13px;
+    box-sizing: border-box;
+  }
+  textarea { height: 400px; }
+  button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #222;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  #status { margin-top: 10px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<h1>Chatbot Flow Editor</h1>
+
+<label>Brand ID</label>
+<input type="number" id="brandId" placeholder="e.g. 1" />
+<button onclick="loadFlow()">Load Flow</button>
+
+<label>Flow JSON</label>
+<textarea id="flowJson" placeholder="Flow will appear here..."></textarea>
+
+<button onclick="saveFlow()">Save Changes</button>
+<div id="status"></div>
+
+<script>
+  const API_BASE = "https://chatbotplatform-production.up.railway.app";
+
+  async function loadFlow() {
+    const brandId = document.getElementById('brandId').value;
+    const status = document.getElementById('status');
+    status.textContent = "Loading...";
+
+    try {
+      const res = await fetch(`${API_BASE}/api/flows/${brandId}`);
+      const data = await res.json();
+
+      if (res.ok) {
+        document.getElementById('flowJson').value = JSON.stringify(data.flow_json, null, 2);
+        status.textContent = "Loaded successfully.";
+      } else {
+        status.textContent = "Error: " + data.error;
+      }
+    } catch (err) {
+      status.textContent = "Failed to load: " + err.message;
+    }
+  }
+
+  async function saveFlow() {
+    const brandId = document.getElementById('brandId').value;
+    const status = document.getElementById('status');
+    const jsonText = document.getElementById('flowJson').value;
+
+    let parsedJson;
+    try {
+      parsedJson = JSON.parse(jsonText);
+    } catch (err) {
+      status.textContent = "Invalid JSON: " + err.message;
+      return;
+    }
+
+    status.textContent = "Saving...";
+
+    try {
+      const res = await fetch(`${API_BASE}/api/flows/${brandId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ flow_json: parsedJson })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        status.textContent = "Saved successfully!";
+      } else {
+        status.textContent = "Error: " + data.error;
+      }
+    } catch (err) {
+      status.textContent = "Failed to save: " + err.message;
+    }
+  }
+</script>
+
+</body>
+</html>

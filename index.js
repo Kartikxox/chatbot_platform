@@ -54,7 +54,45 @@ app.post('/api/chat', async (req, res) => {
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
+// Get a brand's flow (for the admin dashboard)
+app.get('/api/flows/:brand_id', async (req, res) => {
+  try {
+    const { brand_id } = req.params;
+    const result = await pool.query(
+      'SELECT id, flow_json FROM flows WHERE brand_id = $1 LIMIT 1',
+      [brand_id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No flow found for this brand' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
 
+// Update a brand's flow (for the admin dashboard)
+app.post('/api/flows/:brand_id', async (req, res) => {
+  try {
+    const { brand_id } = req.params;
+    const { flow_json } = req.body;
+
+    const result = await pool.query(
+      'UPDATE flows SET flow_json = $1 WHERE brand_id = $2 RETURNING *',
+      [flow_json, brand_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No flow found for this brand' });
+    }
+
+    res.json({ success: true, flow: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
