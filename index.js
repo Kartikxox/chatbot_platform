@@ -1,6 +1,6 @@
 require('dotenv').config();
-const Anthropic = require('@anthropic-ai/sdk');
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const express = require('express');
 const pool = require('./db');
 const cors = require('cors');
@@ -112,17 +112,18 @@ app.post('/api/ask', async (req, res) => {
 
     const { name, knowledge_base } = result.rows[0];
 
-    // 2. Ask Claude, giving it the knowledge base as context
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 300,
-      system: `You are a helpful customer support assistant for ${name}. Answer questions using ONLY the following information. If the answer isn't in this information, politely say you're not sure and suggest they contact the brand directly. Keep answers short and friendly, 2-3 sentences max.\n\nBrand info:\n${knowledge_base}`,
-      messages: [
-        { role: "user", content: question }
-      ]
-    });
+    // 2. Ask Gemini, giving it the knowledge base as context
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-    const answer = message.content[0].text;
+    const prompt = `You are a helpful customer support assistant for ${name}. Answer questions using ONLY the following information. If the answer isn't in this information, politely say you're not sure and suggest they contact the brand directly. Keep answers short and friendly, 2-3 sentences max.
+
+Brand info:
+${knowledge_base}
+
+Customer question: ${question}`;
+
+    const result2 = await model.generateContent(prompt);
+    const answer = result2.response.text();
 
     res.json({ answer });
 
