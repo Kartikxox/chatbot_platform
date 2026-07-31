@@ -114,8 +114,6 @@ app.post('/api/ask', async (req, res) => {
     const { name, knowledge_base } = result.rows[0];
 
     // 2. Ask Gemini, giving it the knowledge base as context
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
     const prompt = `You are a helpful customer support assistant for ${name}. Answer questions using ONLY the following information. If the answer isn't in this information, politely say you're not sure and suggest they contact the brand directly. Keep answers short and friendly, 2-3 sentences max.
 
 Brand info:
@@ -132,8 +130,4 @@ Customer question: ${question}`;
     console.error(err);
     res.status(500).json({ error: 'Something went wrong' });
   }
-});
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
 });
