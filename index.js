@@ -1,4 +1,6 @@
 require('dotenv').config();
+const Anthropic = require('@anthropic-ai/sdk');
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const express = require('express');
 const pool = require('./db');
 const cors = require('cors');
@@ -88,6 +90,42 @@ app.post('/api/flows/:brand_id', async (req, res) => {
     }
 
     res.json({ success: true, flow: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+// AI-powered Q&A using the brand's knowledge base
+app.post('/api/ask', async (req, res) => {
+  try {
+    const { brand_id, question } = req.body;
+
+    // 1. Get the brand's knowledge base
+    const result = await pool.query(
+      'SELECT name, knowledge_base FROM brands WHERE id = $1',
+      [brand_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Brand not found' });
+    }
+
+    const { name, knowledge_base } = result.rows[0];
+
+    // 2. Ask Claude, giving it the knowledge base as context
+    const message = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 300,
+      system: `You are a helpful customer support assistant for ${name}. Answer questions using ONLY the following information. If the answer isn't in this information, politely say you're not sure and suggest they contact the brand directly. Keep answers short and friendly, 2-3 sentences max.\n\nBrand info:\n${knowledge_base}`,
+      messages: [
+        { role: "user", content: question }
+      ]
+    });
+
+    const answer = message.content[0].text;
+
+    res.json({ answer });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Something went wrong' });
