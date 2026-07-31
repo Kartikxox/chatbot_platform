@@ -4,6 +4,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const express = require('express');
 const pool = require('./db');
 const cors = require('cors');
+const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
 
 const app = express();
 app.use(cors());
