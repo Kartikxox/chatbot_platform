@@ -100,8 +100,8 @@ app.post('/api/flows/:brand_id', async (req, res) => {
 app.post('/api/ask', async (req, res) => {
   try {
     const { brand_id, question } = req.body;
+    console.log('Ask endpoint hit, brand_id:', brand_id);
 
-    // 1. Get the brand's knowledge base
     const result = await pool.query(
       'SELECT name, knowledge_base FROM brands WHERE id = $1',
       [brand_id]
@@ -112,8 +112,8 @@ app.post('/api/ask', async (req, res) => {
     }
 
     const { name, knowledge_base } = result.rows[0];
+    console.log('Fetched brand info, calling Gemini now...');
 
-    // 2. Ask Gemini, giving it the knowledge base as context
     const prompt = `You are a helpful customer support assistant for ${name}. Answer questions using ONLY the following information. If the answer isn't in this information, politely say you're not sure and suggest they contact the brand directly. Keep answers short and friendly, 2-3 sentences max.
 
 Brand info:
@@ -122,12 +122,13 @@ ${knowledge_base}
 Customer question: ${question}`;
 
     const result2 = await model.generateContent(prompt);
+    console.log('Gemini responded successfully');
     const answer = result2.response.text();
 
     res.json({ answer });
 
   } catch (err) {
-    console.error(err);
+    console.error('Error in /api/ask:', err);
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
