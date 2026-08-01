@@ -1,10 +1,182 @@
 <!DOCTYPE html>
-<html>
-<head><title>Dummy Brand Website</title></head>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RioRabbit — Dummy Brand Site</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E0D0C;
+    --panel: #171513;
+    --border: #2B2824;
+    --ink: #F4EFE6;
+    --muted: #9C9488;
+    --gold: #C6A15B;
+    --gold-soft: rgba(198, 161, 91, 0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+  }
+  .logo span { color: var(--gold); }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .hero {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 120px 24px 100px;
+    text-align: center;
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 500;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+  .hero p {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 440px;
+    margin: 0 auto 36px;
+  }
+  .cta {
+    display: inline-block;
+    padding: 14px 32px;
+    background: var(--gold);
+    color: #17150F;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    text-decoration: none;
+  }
+  .collections {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px 120px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .collection-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 36px 28px;
+    text-align: center;
+  }
+  .collection-card .tag {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .collection-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .collection-card p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 48px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  @media (max-width: 700px) {
+    .collections { grid-template-columns: 1fr; }
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    h1 { font-size: 38px; }
+  }
+</style>
+</head>
 <body>
-  <h1>Welcome to RioRabbit (test page)</h1>
-  <p>This simulates a real brand's website with the widget embedded.</p>
 
-  <script src="https://chatbotplatform-production.up.railway.app/widget.js" data-brand-id="1"></script>
+<nav>
+  <div class="logo">Rio<span>Rabbit</span></div>
+  <div class="nav-links">
+    <span>Perfumes</span>
+    <span>Sunglasses</span>
+    <span>Combos</span>
+    <span>Contact</span>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="eyebrow">Affordable Luxury, Bold Style</div>
+  <h1>Fragrances worth remembering</h1>
+  <p>Cruelty-free scents inspired by the world's most iconic perfumes — crafted for everyday confidence, without the luxury price tag.</p>
+  <a href="#" class="cta">Explore the collection</a>
+</div>
+
+<div class="collections">
+  <div class="collection-card">
+    <span class="tag">Fresh</span>
+    <h3>Daytime</h3>
+    <p>Citrus and aquatic notes for clean, everyday wear.</p>
+  </div>
+  <div class="collection-card">
+    <span class="tag">Romantic</span>
+    <h3>Date Night</h3>
+    <p>Soft florals and warm woods for evenings that matter.</p>
+  </div>
+  <div class="collection-card">
+    <span class="tag">Bold</span>
+    <h3>Nightout</h3>
+    <p>Strong projection scents built to be noticed.</p>
+  </div>
+</div>
+
+<footer>
+  This is a demo storefront used to showcase the RioRabbit chatbot widget.
+</footer>
+
+<script src="https://chatbotplatform-production.up.railway.app/widget.js" data-brand-id="1"></script>
+
 </body>
 </html>
