@@ -4,64 +4,84 @@
   const CHAT_API_URL = "https://chatbotplatform-production.up.railway.app/api/chat";
   const ASK_API_URL = "https://chatbotplatform-production.up.railway.app/api/ask";
 
-  // Inject CSS
   const style = document.createElement('style');
   style.textContent = `
     #cb-bubble {
       position: fixed; bottom: 20px; right: 20px;
-      width: 60px; height: 60px; border-radius: 50%;
-      background: #222; color: white; display: flex;
+      width: 58px; height: 58px; border-radius: 50%;
+      background: #C6A15B; color: #17150F; display: flex;
       align-items: center; justify-content: center;
-      cursor: pointer; font-size: 24px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3); z-index: 9999;
+      cursor: pointer; font-size: 22px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4); z-index: 9999;
+      transition: transform 0.15s ease;
     }
+    #cb-bubble:hover { transform: scale(1.05); }
     #cb-window {
       position: fixed; bottom: 90px; right: 20px;
-      width: 320px; height: 460px; background: white;
-      border-radius: 10px; box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+      width: 330px; height: 470px; background: #171513;
+      border: 1px solid #2B2824;
+      border-radius: 6px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
       display: none; flex-direction: column; overflow: hidden;
-      z-index: 9999; font-family: sans-serif;
+      z-index: 9999; font-family: 'Inter', sans-serif;
     }
-    #cb-messages { flex: 1; padding: 10px; overflow-y: auto; }
+    #cb-header {
+      padding: 16px 18px; border-bottom: 1px solid #2B2824;
+      font-family: 'Cormorant Garamond', serif; font-size: 18px;
+      font-weight: 600; color: #F4EFE6; letter-spacing: 0.02em;
+    }
+    #cb-header span { color: #C6A15B; }
+    #cb-messages { flex: 1; padding: 14px; overflow-y: auto; }
     .cb-bot-message {
-      background: #f0f0f0; padding: 8px 12px; border-radius: 10px;
-      margin-bottom: 10px; max-width: 85%; font-size: 14px; line-height: 1.4;
+      background: #201D19; color: #E8E2D6; border: 1px solid #2B2824;
+      padding: 10px 13px; border-radius: 4px;
+      margin-bottom: 10px; max-width: 88%; font-size: 13.5px; line-height: 1.5;
     }
     .cb-user-message {
-      background: #222; color: white; padding: 8px 12px; border-radius: 10px;
-      margin-bottom: 10px; max-width: 85%; font-size: 14px; margin-left: auto;
+      background: #C6A15B; color: #17150F; padding: 10px 13px; border-radius: 4px;
+      margin-bottom: 10px; max-width: 88%; font-size: 13.5px; margin-left: auto;
+      line-height: 1.5;
     }
     .cb-option-btn {
-      display: block; width: 100%; padding: 8px; margin-bottom: 6px;
-      background: #222; color: white; border: none; border-radius: 6px;
-      cursor: pointer; text-align: left; font-size: 13px;
+      display: block; width: 100%; padding: 10px 12px; margin-bottom: 7px;
+      background: transparent; color: #C6A15B; border: 1px solid #3A362F;
+      border-radius: 4px; cursor: pointer; text-align: left; font-size: 13px;
+      transition: border-color 0.15s ease, background 0.15s ease;
     }
+    .cb-option-btn:hover { border-color: #C6A15B; background: rgba(198,161,91,0.08); }
     #cb-input-row {
-      display: flex; border-top: 1px solid #eee; padding: 8px;
-      gap: 6px;
+      display: flex; border-top: 1px solid #2B2824; padding: 10px;
+      gap: 8px; background: #171513;
     }
     #cb-text-input {
-      flex: 1; padding: 8px 10px; border: 1px solid #ddd;
-      border-radius: 6px; font-size: 13px; outline: none;
+      flex: 1; padding: 9px 11px; border: 1px solid #2B2824;
+      background: #0E0D0C; color: #F4EFE6;
+      border-radius: 4px; font-size: 13px; outline: none;
     }
+    #cb-text-input::placeholder { color: #6B655C; }
+    #cb-text-input:focus { border-color: #C6A15B; }
     #cb-send-btn {
-      background: #222; color: white; border: none;
-      border-radius: 6px; padding: 8px 14px; cursor: pointer; font-size: 13px;
+      background: #C6A15B; color: #17150F; border: none;
+      border-radius: 4px; padding: 9px 16px; cursor: pointer;
+      font-size: 12.5px; font-weight: 600; letter-spacing: 0.02em;
     }
+    #cb-send-btn:hover { background: #D4B173; }
     .cb-typing {
-      font-size: 12px; color: #999; padding: 4px 12px;
+      font-size: 12px; color: #6B655C; padding: 4px 4px 10px;
+      font-style: italic;
     }
+    #cb-messages::-webkit-scrollbar { width: 6px; }
+    #cb-messages::-webkit-scrollbar-thumb { background: #2B2824; border-radius: 3px; }
   `;
   document.head.appendChild(style);
 
-  // Inject HTML
   const bubble = document.createElement('div');
   bubble.id = 'cb-bubble';
-  bubble.textContent = '💬';
+  bubble.innerHTML = '&#10022;';
 
   const chatWindow = document.createElement('div');
   chatWindow.id = 'cb-window';
   chatWindow.innerHTML = `
+    <div id="cb-header">Rio<span>Rabbit</span></div>
     <div id="cb-messages"></div>
     <div id="cb-input-row">
       <input type="text" id="cb-text-input" placeholder="Type a question..." />
